@@ -1,11 +1,12 @@
 use anyhow::{bail, Context, Result};
 use colored::Colorize;
 use git2::Repository;
+use std::io::Write;
 use std::process::Command;
 
 use crate::config::Config;
 
-pub fn run(url: String) -> Result<()> {
+pub fn run(url: String, no_commit: bool) -> Result<()> {
     let repo = Repository::open_from_env().context("Not in a git repository")?;
     let config = Config::load(&repo)?;
 
@@ -42,6 +43,30 @@ pub fn run(url: String) -> Result<()> {
     }
 
     println!("{} {}", "✓".green().bold(), "Submodule added successfully.");
+
+    // Prompt to commit if we're on a TTY (unless --no-commit)
+    if !no_commit && atty::is(atty::Stream::Stdin) {
+        print!("Commit to parent repo? [Y/n] ");
+        std::io::stdout().flush()?;
+
+        let mut input = String::new();
+        std::io::stdin().read_line(&mut input)?;
+
+        if input.trim().is_empty() || input.trim().eq_ignore_ascii_case("y") {
+            let msg = format!("Add submodule: {}", sub_path);
+            Command::new("git")
+                .args(["add", "-A"])
+                .current_dir(workdir)
+                .output()?;
+            Command::new("git")
+                .args(["commit", "-m", &msg])
+                .current_dir(workdir)
+                .output()?;
+            println!("{} {}", "✓".green().bold(), format!("Committed: {}", msg).dimmed());
+        } else {
+            println!("{}", "Changes left staged.".dimmed());
+        }
+    }
 
     Ok(())
 }

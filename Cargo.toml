@@ -7,8 +7,9 @@ license = "MIT"
 repository = "https://github.com/scottatron/git-dom"
 
 [dependencies]
-clap = { version = "4", features = ["derive"] }
-clap_complete = "4"
+clap = { version = "4", features = ["derive", "unstable-ext"] }
+clap_complete = { version = "4", features = ["unstable-dynamic"] }
 git2 = { version = "0.20", features = ["vendored-openssl"] }
 colored = "3"
 anyhow = "1"
+atty = "0.2"

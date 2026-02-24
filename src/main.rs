@@ -1,5 +1,6 @@
 use anyhow::Result;
-use clap::Parser;
+use clap::{CommandFactory, Parser};
+use clap_complete::CompleteEnv;
 
 mod cli;
 mod commands;
@@ -7,6 +8,9 @@ mod config;
 mod submodule;
 
 fn main() -> Result<()> {
+    // Runtime shell completion — handles COMPLETE=zsh/bash/fish requests
+    CompleteEnv::with_factory(cli::Cli::command).complete();
+
     let args = cli::Cli::parse();
 
     // Respect NO_COLOR (https://no-color.org/)

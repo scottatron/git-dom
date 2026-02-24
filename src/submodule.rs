@@ -15,6 +15,7 @@ pub struct SubmoduleInfo {
     pub staged: usize,
     pub modified: usize,
     pub untracked: usize,
+    pub parent_changed: bool,
 }
 
 /// Discover all submodules in the given repo, optionally filtering by name.
@@ -39,7 +40,7 @@ pub fn discover(repo: &Repository, filter: Option<&str>) -> Result<Vec<Submodule
         let url = sm.url().unwrap_or("").to_string();
 
         let abs_path = workdir.join(&path);
-        let info = if abs_path.exists() {
+        let mut info = if abs_path.exists() {
             gather_info(&name, &path, &url, &abs_path)?
         } else {
             SubmoduleInfo {
@@ -55,13 +56,50 @@ pub fn discover(repo: &Repository, filter: Option<&str>) -> Result<Vec<Submodule
                 staged: 0,
                 modified: 0,
                 untracked: 0,
+                parent_changed: false,
             }
         };
+
+        // Check if the submodule ref has uncommitted changes in the parent
+        info.parent_changed = check_parent_changed(repo, &info.path);
 
         results.push(info);
     }
 
     Ok(results)
+}
+
+/// Check if the submodule has pending (staged or unstaged) changes in the parent repo's index.
+fn check_parent_changed(repo: &Repository, sm_path: &Path) -> bool {
+    let sm_path_str = match sm_path.to_str() {
+        Some(s) => s,
+        None => return false,
+    };
+
+    // Check for staged changes (index vs HEAD)
+    let head_tree = repo
+        .head()
+        .ok()
+        .and_then(|h| h.peel_to_tree().ok());
+
+    let mut diff_opts = git2::DiffOptions::new();
+    diff_opts.pathspec(sm_path_str);
+
+    // Index vs HEAD (staged)
+    let staged = repo
+        .diff_tree_to_index(head_tree.as_ref(), None, Some(&mut diff_opts))
+        .ok()
+        .is_some_and(|d| d.deltas().count() > 0);
+
+    // Workdir vs index (unstaged submodule ref change)
+    let mut diff_opts2 = git2::DiffOptions::new();
+    diff_opts2.pathspec(sm_path_str);
+    let unstaged = repo
+        .diff_index_to_workdir(None, Some(&mut diff_opts2))
+        .ok()
+        .is_some_and(|d| d.deltas().count() > 0);
+
+    staged || unstaged
 }
 
 fn gather_info(
@@ -158,5 +196,6 @@ fn gather_info(
         staged,
         modified,
         untracked,
+        parent_changed: false, // filled in by discover()
     })
 }

@@ -84,6 +84,15 @@ pub fn run(name: Option<String>) -> Result<()> {
                 );
             }
         }
+
+        // Pending changes in parent repo
+        if sm.parent_changed {
+            println!(
+                "  {} {}",
+                "⬆".yellow(),
+                "submodule ref changed in parent (uncommitted)".yellow()
+            );
+        }
     }
 
     Ok(())

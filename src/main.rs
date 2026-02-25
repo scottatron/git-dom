@@ -21,9 +21,7 @@ fn main() -> Result<()> {
         cli::Command::Pull { name, commit } => commands::pull::run(name, commit),
         cli::Command::Rm { name } => commands::rm::run(name),
         cli::Command::Diff { name, full } => commands::diff::run(name, full),
-        cli::Command::Foreach { command, parallel } => {
-            commands::foreach::run(command, parallel)
-        }
+        cli::Command::Foreach { command, parallel } => commands::foreach::run(command, parallel),
         cli::Command::Completions { shell } => commands::completions::run(shell),
     }
 }

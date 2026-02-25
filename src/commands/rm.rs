@@ -57,11 +57,7 @@ pub fn run(name: String) -> Result<()> {
         bail!("git rm failed: {}", stderr);
     }
 
-    println!(
-        "{} {} removed cleanly.",
-        "✓".green().bold(),
-        sm_name.bold()
-    );
+    println!("{} {} removed cleanly.", "✓".green().bold(), sm_name.bold());
 
     Ok(())
 }

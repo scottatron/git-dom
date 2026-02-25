@@ -56,11 +56,7 @@ pub fn run(name: Option<String>, commit_override: Option<CommitMode>) -> Result<
         let stdout = String::from_utf8_lossy(&output.stdout);
         if !stdout.trim().is_empty() {
             updated.push(&sm.name);
-            println!(
-                "  {} {} updated",
-                "↑".green(),
-                sm.name.bold()
-            );
+            println!("  {} {} updated", "↑".green(), sm.name.bold());
         }
     }
 
@@ -91,7 +87,11 @@ pub fn run(name: Option<String>, commit_override: Option<CommitMode>) -> Result<
                 .current_dir(workdir)
                 .output()?;
 
-            println!("{} {}", "✓".green().bold(), format!("Committed: {}", msg).dimmed());
+            println!(
+                "{} {}",
+                "✓".green().bold(),
+                format!("Committed: {}", msg).dimmed()
+            );
         }
         CommitMode::Stage => {
             Command::new("git")

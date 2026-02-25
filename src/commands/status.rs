@@ -23,11 +23,7 @@ pub fn run(name: Option<String>) -> Result<()> {
         println!("{}", sm.name.bold());
         println!("  {} {}", "path:".dimmed(), sm.path.display());
         println!("  {} {}", "url: ".dimmed(), sm.url);
-        println!(
-            "  {} {}",
-            "on:  ".dimmed(),
-            branch_display.cyan()
-        );
+        println!("  {} {}", "on:  ".dimmed(), branch_display.cyan());
 
         if let Some(ref commit) = sm.head_commit {
             let msg = sm.head_message.as_deref().unwrap_or("");
@@ -36,10 +32,7 @@ pub fn run(name: Option<String>) -> Result<()> {
 
         // Ahead/behind
         match (sm.ahead, sm.behind) {
-            (0, 0) => println!(
-                "  {}",
-                "Your branch is up to date with upstream.".green()
-            ),
+            (0, 0) => println!("  {}", "Your branch is up to date with upstream.".green()),
             (a, 0) => println!(
                 "  {} ahead of upstream by {} commit(s)",
                 "↑".green(),
@@ -63,25 +56,13 @@ pub fn run(name: Option<String>) -> Result<()> {
             println!("  {}", "nothing to commit, working tree clean".green());
         } else {
             if sm.staged > 0 {
-                println!(
-                    "  {} {} staged change(s)",
-                    "●".green(),
-                    sm.staged
-                );
+                println!("  {} {} staged change(s)", "●".green(), sm.staged);
             }
             if sm.modified > 0 {
-                println!(
-                    "  {} {} modified file(s)",
-                    "✱".red(),
-                    sm.modified
-                );
+                println!("  {} {} modified file(s)", "✱".red(), sm.modified);
             }
             if sm.untracked > 0 {
-                println!(
-                    "  {} {} untracked file(s)",
-                    "?".dimmed(),
-                    sm.untracked
-                );
+                println!("  {} {} untracked file(s)", "?".dimmed(), sm.untracked);
             }
         }
 

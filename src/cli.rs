@@ -27,7 +27,11 @@ fn complete_submodule_name(current: &std::ffi::OsStr) -> Vec<clap_complete::Comp
 }
 
 #[derive(Parser)]
-#[command(name = "git-dom", version, about = "A friendlier UX for git submodules")]
+#[command(
+    name = "git-dom",
+    version,
+    about = "A friendlier UX for git submodules"
+)]
 pub struct Cli {
     /// Disable colour output
     #[arg(long = "no-colour", global = true)]

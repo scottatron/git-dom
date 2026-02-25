@@ -1,4 +1,4 @@
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result, bail};
 use colored::Colorize;
 use git2::Repository;
 use std::io::Write;
@@ -42,7 +42,7 @@ pub fn run(url: String, no_commit: bool) -> Result<()> {
         bail!("git submodule add failed: {}", stderr);
     }
 
-    println!("{} {}", "✓".green().bold(), "Submodule added successfully.");
+    println!("{} Submodule added successfully.", "✓".green().bold());
 
     // Prompt to commit if we're on a TTY (unless --no-commit)
     if !no_commit && atty::is(atty::Stream::Stdin) {
@@ -62,7 +62,11 @@ pub fn run(url: String, no_commit: bool) -> Result<()> {
                 .args(["commit", "-m", &msg])
                 .current_dir(workdir)
                 .output()?;
-            println!("{} {}", "✓".green().bold(), format!("Committed: {}", msg).dimmed());
+            println!(
+                "{} {}",
+                "✓".green().bold(),
+                format!("Committed: {}", msg).dimmed()
+            );
         } else {
             println!("{}", "Changes left staged.".dimmed());
         }

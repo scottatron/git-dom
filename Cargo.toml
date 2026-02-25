@@ -18,6 +18,6 @@ atty = "0.2"
 sign-tag = false
 push = true
 publish = false
-tag-prefix = "v"
+tag-prefix = ""
 tag-message = "Release {{version}}"
 pre-release-commit-message = "Release {{version}}"

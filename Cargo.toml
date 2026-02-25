@@ -13,3 +13,11 @@ git2 = { version = "0.20", features = ["vendored-openssl"] }
 colored = "3"
 anyhow = "1"
 atty = "0.2"
+
+[package.metadata.release]
+sign-tag = false
+push = true
+publish = false
+tag-prefix = "v"
+tag-message = "Release {{version}}"
+pre-release-commit-message = "Release {{version}}"

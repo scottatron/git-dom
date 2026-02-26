@@ -59,7 +59,7 @@ pub enum Command {
 
     /// Add a submodule with Go-style path convention
     Clone {
-        /// URL or host/user/repo path (e.g. github.com/user/repo)
+        /// URL, host/user/repo, or owner/repo (defaults to github.com)
         url: String,
 
         /// Skip commit prompt even when running interactively

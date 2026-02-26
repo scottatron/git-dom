@@ -55,9 +55,14 @@ Rich per-submodule status — like `git status` but for every submodule:
 Add a submodule with a Go-style path convention:
 
 ```sh
+git dom clone tokio-rs/tokio
+# → src/github.com/tokio-rs/tokio
+
 git dom clone github.com/tokio-rs/tokio
 # → src/github.com/tokio-rs/tokio
 ```
+
+`owner/repo` defaults to GitHub.
 
 Prompts to commit when running interactively. Use `--no-commit` to skip.
 

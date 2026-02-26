@@ -75,12 +75,25 @@ pub fn run(url: String, no_commit: bool) -> Result<()> {
     Ok(())
 }
 
-/// Parse a URL like "github.com/user/repo" into a full git URL and a local path.
+/// Parse clone input into a full git URL and a local path.
+///
+/// Supported inputs:
+/// - owner/repo (expands to github.com)
+/// - host/owner/repo
+/// - full URLs (https://, ssh://, git@...)
 fn parse_url_and_path(url: &str, root: &str) -> Result<(String, String)> {
     // Already a full URL
     if url.starts_with("https://") || url.starts_with("git@") || url.starts_with("ssh://") {
         let path = url_to_path(url, root)?;
         return Ok((url.to_string(), path));
+    }
+
+    // Shorthand: owner/repo (defaults to github.com)
+    let parts: Vec<&str> = url.splitn(2, '/').collect();
+    if parts.len() == 2 && !parts[0].is_empty() && !parts[1].is_empty() && !parts[1].contains('/') {
+        let git_url = format!("https://github.com/{}", url);
+        let path = format!("{}/github.com/{}", root, url);
+        return Ok((git_url, path));
     }
 
     // Shorthand: github.com/user/repo
@@ -92,7 +105,7 @@ fn parse_url_and_path(url: &str, root: &str) -> Result<(String, String)> {
     }
 
     bail!(
-        "Could not parse URL: {}. Use github.com/user/repo or a full git URL.",
+        "Could not parse URL: {}. Use owner/repo, github.com/user/repo, or a full git URL.",
         url
     );
 }
@@ -107,4 +120,39 @@ fn url_to_path(url: &str, root: &str) -> Result<String> {
         .to_string();
 
     Ok(format!("{}/{}", root, stripped))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::parse_url_and_path;
+
+    #[test]
+    fn parses_owner_repo_slug() {
+        let (git_url, path) = parse_url_and_path("tokio-rs/tokio", "src").unwrap();
+        assert_eq!(git_url, "https://github.com/tokio-rs/tokio");
+        assert_eq!(path, "src/github.com/tokio-rs/tokio");
+    }
+
+    #[test]
+    fn parses_host_owner_repo_shorthand() {
+        let (git_url, path) = parse_url_and_path("github.com/tokio-rs/tokio", "src").unwrap();
+        assert_eq!(git_url, "https://github.com/tokio-rs/tokio");
+        assert_eq!(path, "src/github.com/tokio-rs/tokio");
+    }
+
+    #[test]
+    fn parses_full_https_url() {
+        let (git_url, path) =
+            parse_url_and_path("https://github.com/tokio-rs/tokio.git", "src").unwrap();
+        assert_eq!(git_url, "https://github.com/tokio-rs/tokio.git");
+        assert_eq!(path, "src/github.com/tokio-rs/tokio");
+    }
+
+    #[test]
+    fn parses_full_ssh_url() {
+        let (git_url, path) =
+            parse_url_and_path("git@github.com:tokio-rs/tokio.git", "src").unwrap();
+        assert_eq!(git_url, "git@github.com:tokio-rs/tokio.git");
+        assert_eq!(path, "src/github.com/tokio-rs/tokio");
+    }
 }

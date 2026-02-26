@@ -1,6 +1,6 @@
 # git-dom 🏠
 
-A friendlier UX for git submodules.
+A an opinionated & friendlier UX for git submodules.
 
 Git submodules are powerful but the CLI is clunky. `git-dom` wraps existing submodule commands with simpler, more intuitive operations — like a good parent managing unruly children. 😏
 
@@ -28,7 +28,7 @@ cargo install --git https://github.com/scottatron/git-dom.git
 git dom -h
 ```
 
-> **Note:** `git dom --help` opens a man page (which doesn't exist yet — see [#1](https://github.com/scottatron/git-dom/issues/1)). Use `git dom -h` for inline help.
+> **Note:** `git dom --help` uses `git help dom`, so it requires a `git-dom` man page in your `MANPATH`. Install once with `git dom man --install`.
 
 ## Commands
 
@@ -121,6 +121,24 @@ Run a command in every submodule:
 ```sh
 git dom foreach git fetch origin
 git dom foreach --parallel cargo check
+```
+
+### `git dom man`
+
+Generate or install the `git-dom.1` man page:
+
+```sh
+git dom man --install
+# installs to $XDG_DATA_HOME/man/man1/git-dom.1
+# (or ~/.local/share/man/man1/git-dom.1 if XDG_DATA_HOME is unset)
+
+git dom --help
+```
+
+You can also write to a custom path:
+
+```sh
+git dom man --output ./git-dom.1
 ```
 
 ## Shell Completions

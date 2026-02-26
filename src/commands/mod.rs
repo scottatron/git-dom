@@ -3,6 +3,7 @@ pub mod completions;
 pub mod diff;
 pub mod foreach;
 pub mod ls;
+pub mod man;
 pub mod pull;
 pub mod rm;
 pub mod status;

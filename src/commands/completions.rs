@@ -29,6 +29,7 @@ _git-dom() {
         'diff:Show changes across submodules'
         'foreach:Run a command in each submodule'
         'completions:Generate shell completions'
+        'man:Generate or install a man page'
         'help:Print help'
     )
 
@@ -98,6 +99,13 @@ _git-dom() {
                         '--no-colour[Disable colour output]' \
                         '(-h --help)'{-h,--help}'[Print help]' \
                         '1:shell:(bash zsh fish powershell elvish)'
+                    ;;
+                man)
+                    _arguments \
+                        '--no-colour[Disable colour output]' \
+                        '--install[Install to $XDG_DATA_HOME/man/man1 (or ~/.local/share/man/man1)]' \
+                        '(-o --output)'{-o,--output}'[Write man page to path]:path:_files' \
+                        '(-h --help)'{-h,--help}'[Print help]'
                     ;;
             esac
             ;;

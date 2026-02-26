@@ -23,5 +23,6 @@ fn main() -> Result<()> {
         cli::Command::Diff { name, full } => commands::diff::run(name, full),
         cli::Command::Foreach { command, parallel } => commands::foreach::run(command, parallel),
         cli::Command::Completions { shell } => commands::completions::run(shell),
+        cli::Command::Man { output, install } => commands::man::run(output, install),
     }
 }

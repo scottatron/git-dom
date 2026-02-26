@@ -1,6 +1,7 @@
 use clap::{Parser, Subcommand};
 use clap_complete::Shell;
 use clap_complete::engine::ArgValueCompleter;
+use std::path::PathBuf;
 
 use crate::config::CommitMode;
 
@@ -30,7 +31,7 @@ fn complete_submodule_name(current: &std::ffi::OsStr) -> Vec<clap_complete::Comp
 #[command(
     name = "git-dom",
     version,
-    about = "A friendlier UX for git submodules"
+    about = "A an opinionated & friendlier UX for git submodules"
 )]
 pub struct Cli {
     /// Disable colour output
@@ -110,5 +111,16 @@ pub enum Command {
     Completions {
         /// Shell to generate completions for
         shell: Shell,
+    },
+
+    /// Generate or install a man page for git-dom
+    Man {
+        /// Write man page to this path (defaults to stdout)
+        #[arg(long, short = 'o', value_name = "PATH", conflicts_with = "install")]
+        output: Option<PathBuf>,
+
+        /// Install to $XDG_DATA_HOME/man/man1/git-dom.1 (or ~/.local/share/man/man1)
+        #[arg(long)]
+        install: bool,
     },
 }

@@ -2,13 +2,14 @@
 name = "git-dom"
 version = "0.4.2"
 edition = "2024"
-description = "A friendlier UX for git submodules"
+description = "A an opinionated & friendlier UX for git submodules"
 license = "MIT"
 repository = "https://github.com/scottatron/git-dom"
 
 [dependencies]
 clap = { version = "4", features = ["derive", "unstable-ext"] }
 clap_complete = { version = "4", features = ["unstable-dynamic"] }
+clap_mangen = "0.2"
 git2 = { version = "0.20", features = ["vendored-openssl"] }
 colored = "3"
 anyhow = "1"

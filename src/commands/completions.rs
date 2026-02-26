@@ -77,6 +77,7 @@ _git-dom() {
                 rm)
                     _arguments \
                         '--no-colour[Disable colour output]' \
+                        '--no-commit[Skip commit prompt]' \
                         '(-h --help)'{-h,--help}'[Print help]' \
                         '1:name:_git-dom_submodule_names'
                     ;;

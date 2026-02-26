@@ -105,6 +105,8 @@ Remove a submodule cleanly in one step — no more manually editing `.gitmodules
 git dom rm my-lib
 ```
 
+Prompts to commit when running interactively. Use `--no-commit` to skip.
+
 ### `git dom diff [name]`
 
 Show changes across submodules — updated refs, dirty working trees:

@@ -84,6 +84,10 @@ pub enum Command {
         /// Submodule name or path
         #[arg(add = ArgValueCompleter::new(complete_submodule_name))]
         name: String,
+
+        /// Skip commit prompt even when running interactively
+        #[arg(long)]
+        no_commit: bool,
     },
 
     /// Show changes across submodules

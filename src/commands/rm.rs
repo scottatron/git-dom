@@ -1,10 +1,11 @@
 use anyhow::{Context, Result, bail};
 use colored::Colorize;
+use std::io::Write;
 use std::process::Command;
 
 use git2::Repository;
 
-pub fn run(name: String) -> Result<()> {
+pub fn run(name: String, no_commit: bool) -> Result<()> {
     let repo = Repository::open_from_env().context("Not in a git repository")?;
     let workdir = repo
         .workdir()
@@ -58,6 +59,37 @@ pub fn run(name: String) -> Result<()> {
     }
 
     println!("{} {} removed cleanly.", "✓".green().bold(), sm_name.bold());
+
+    // Prompt to commit if we're on a TTY (unless --no-commit)
+    if !no_commit && atty::is(atty::Stream::Stdin) {
+        print!("Commit to parent repo? [Y/n] ");
+        std::io::stdout().flush()?;
+
+        let mut input = String::new();
+        std::io::stdin().read_line(&mut input)?;
+
+        if input.trim().is_empty() || input.trim().eq_ignore_ascii_case("y") {
+            let msg = format!("Remove submodule: {}", sm_path);
+            let output = Command::new("git")
+                .args(["commit", "-m", &msg])
+                .current_dir(workdir)
+                .output()
+                .context("Failed to run git commit")?;
+
+            if !output.status.success() {
+                let stderr = String::from_utf8_lossy(&output.stderr);
+                bail!("git commit failed: {}", stderr);
+            }
+
+            println!(
+                "{} {}",
+                "✓".green().bold(),
+                format!("Committed: {}", msg).dimmed()
+            );
+        } else {
+            println!("{}", "Changes left staged.".dimmed());
+        }
+    }
 
     Ok(())
 }

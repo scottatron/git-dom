@@ -30,15 +30,15 @@ pub fn run(name: Option<String>, commit_override: Option<CommitMode>) -> Result<
         fetch_args.push(n.clone());
     }
 
-    let output = Command::new("git")
+    // Use .status() instead of .output() to inherit stdio and show git's progress
+    let status = Command::new("git")
         .args(&fetch_args)
         .current_dir(workdir)
-        .output()
+        .status()
         .context("Failed to run git submodule update")?;
 
-    if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        eprintln!("{} {}", "✗".red().bold(), stderr);
+    if !status.success() {
+        eprintln!("{} git submodule update failed", "✗".red().bold());
         return Ok(());
     }
 

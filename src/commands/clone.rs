@@ -31,15 +31,15 @@ pub fn run(url: String, no_commit: bool) -> Result<()> {
     );
 
     // Use git CLI for submodule add (git2 doesn't fully support this)
-    let output = Command::new("git")
+    // Use .status() instead of .output() to inherit stdio and show git's progress
+    let status = Command::new("git")
         .args(["submodule", "add", &git_url, &sub_path])
         .current_dir(workdir)
-        .output()
+        .status()
         .context("Failed to run git submodule add")?;
 
-    if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        bail!("git submodule add failed: {}", stderr);
+    if !status.success() {
+        bail!("git submodule add failed");
     }
 
     println!("{} Submodule added successfully.", "✓".green().bold());

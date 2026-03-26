@@ -4,6 +4,7 @@ use clap_complete::engine::ArgValueCompleter;
 use std::path::PathBuf;
 
 use crate::config::CommitMode;
+use crate::version::VERSION;
 
 /// Return submodule names for shell completion by reading .gitmodules.
 fn complete_submodule_name(current: &std::ffi::OsStr) -> Vec<clap_complete::CompletionCandidate> {
@@ -30,7 +31,7 @@ fn complete_submodule_name(current: &std::ffi::OsStr) -> Vec<clap_complete::Comp
 #[derive(Parser)]
 #[command(
     name = "git-dom",
-    version,
+    version = VERSION,
     about = "A an opinionated & friendlier UX for git submodules"
 )]
 pub struct Cli {

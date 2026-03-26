@@ -5,6 +5,7 @@ mod cli;
 mod commands;
 mod config;
 mod submodule;
+mod version;
 
 fn main() -> Result<()> {
     let args = cli::Cli::parse();

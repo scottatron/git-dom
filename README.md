@@ -86,6 +86,8 @@ git dom clone https://github.com/user/repo.git
 git dom clone git@github.com:user/repo.git
 ```
 
+Local builds include Git metadata in `git dom --version` so unreleased binaries can be traced back to a commit.
+
 ### `git dom pull [name]`
 
 Fetch and update all submodules (or a specific one) from upstream, then handle the commit:

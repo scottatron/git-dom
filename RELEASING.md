@@ -60,3 +60,4 @@ cargo release patch
 
 - `publish = false` in `Cargo.toml` — we don't publish to crates.io yet
 - Tags are unsigned (`sign-tag = false`) — enable with `sign-tag = true` if you set up GPG
+- Local non-tagged builds report `git dom --version` as `<cargo version> (<git describe>)`, while tagged release builds keep the plain package version

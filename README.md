@@ -64,6 +64,13 @@ git dom clone github.com/tokio-rs/tokio
 
 `owner/repo` defaults to GitHub.
 
+To clone a specific branch and record it in `.gitmodules`:
+
+```sh
+git dom clone -b main tokio-rs/tokio
+git dom clone --branch release-1.0 github.com/tokio-rs/tokio
+```
+
 Prompts to commit when running interactively. Use `--no-commit` to skip.
 
 The root path (`src/` by default) is configurable:

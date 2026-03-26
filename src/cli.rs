@@ -63,6 +63,10 @@ pub enum Command {
         /// URL, host/user/repo, or owner/repo (defaults to github.com)
         url: String,
 
+        /// Clone and track a specific branch
+        #[arg(long, short = 'b', value_name = "BRANCH")]
+        branch: Option<String>,
+
         /// Skip commit prompt even when running interactively
         #[arg(long)]
         no_commit: bool,

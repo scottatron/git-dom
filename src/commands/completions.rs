@@ -63,6 +63,7 @@ _git-dom() {
                 clone)
                     _arguments \
                         '--no-colour[Disable colour output]' \
+                        '(-b --branch)'{-b,--branch}'[Clone and track a specific branch]:branch:' \
                         '--no-commit[Skip commit prompt]' \
                         '(-h --help)'{-h,--help}'[Print help]' \
                         '1:url:'

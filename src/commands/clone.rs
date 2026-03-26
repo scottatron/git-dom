@@ -6,7 +6,7 @@ use std::process::Command;
 
 use crate::config::Config;
 
-pub fn run(url: String, no_commit: bool) -> Result<()> {
+pub fn run(url: String, branch: Option<String>, no_commit: bool) -> Result<()> {
     let repo = Repository::open_from_env().context("Not in a git repository")?;
     let config = Config::load(&repo)?;
 
@@ -23,17 +23,24 @@ pub fn run(url: String, no_commit: bool) -> Result<()> {
         bail!("Path already exists: {}", full_path.display());
     }
 
+    let branch_label = branch
+        .as_deref()
+        .map(|branch| format!(" ({})", branch))
+        .unwrap_or_default();
+
     println!(
-        "{} {} → {}",
+        "{} {}{} → {}",
         "Adding submodule".bold(),
         git_url.cyan(),
+        branch_label.dimmed(),
         sub_path.dimmed()
     );
 
     // Use git CLI for submodule add (git2 doesn't fully support this)
     // Use .status() instead of .output() to inherit stdio and show git's progress
+    let add_args = submodule_add_args(&git_url, &sub_path, branch.as_deref());
     let status = Command::new("git")
-        .args(["submodule", "add", &git_url, &sub_path])
+        .args(&add_args)
         .current_dir(workdir)
         .status()
         .context("Failed to run git submodule add")?;
@@ -73,6 +80,19 @@ pub fn run(url: String, no_commit: bool) -> Result<()> {
     }
 
     Ok(())
+}
+
+fn submodule_add_args<'a>(
+    git_url: &'a str,
+    sub_path: &'a str,
+    branch: Option<&'a str>,
+) -> Vec<&'a str> {
+    let mut args = vec!["submodule", "add"];
+    if let Some(branch) = branch {
+        args.extend(["-b", branch]);
+    }
+    args.extend([git_url, sub_path]);
+    args
 }
 
 /// Parse clone input into a full git URL and a local path.
@@ -124,7 +144,7 @@ fn url_to_path(url: &str, root: &str) -> Result<String> {
 
 #[cfg(test)]
 mod tests {
-    use super::parse_url_and_path;
+    use super::{parse_url_and_path, submodule_add_args};
 
     #[test]
     fn parses_owner_repo_slug() {
@@ -154,5 +174,43 @@ mod tests {
             parse_url_and_path("git@github.com:tokio-rs/tokio.git", "src").unwrap();
         assert_eq!(git_url, "git@github.com:tokio-rs/tokio.git");
         assert_eq!(path, "src/github.com/tokio-rs/tokio");
+    }
+
+    #[test]
+    fn builds_submodule_add_args_with_branch() {
+        let args = submodule_add_args(
+            "https://github.com/tokio-rs/tokio",
+            "src/github.com/tokio-rs/tokio",
+            Some("main"),
+        );
+        assert_eq!(
+            args,
+            vec![
+                "submodule",
+                "add",
+                "-b",
+                "main",
+                "https://github.com/tokio-rs/tokio",
+                "src/github.com/tokio-rs/tokio",
+            ]
+        );
+    }
+
+    #[test]
+    fn builds_submodule_add_args_without_branch() {
+        let args = submodule_add_args(
+            "https://github.com/tokio-rs/tokio",
+            "src/github.com/tokio-rs/tokio",
+            None,
+        );
+        assert_eq!(
+            args,
+            vec![
+                "submodule",
+                "add",
+                "https://github.com/tokio-rs/tokio",
+                "src/github.com/tokio-rs/tokio",
+            ]
+        );
     }
 }

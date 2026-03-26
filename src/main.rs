@@ -17,7 +17,11 @@ fn main() -> Result<()> {
     match args.command {
         cli::Command::Ls { name } => commands::ls::run(name),
         cli::Command::Status { name } => commands::status::run(name),
-        cli::Command::Clone { url, no_commit } => commands::clone::run(url, no_commit),
+        cli::Command::Clone {
+            url,
+            branch,
+            no_commit,
+        } => commands::clone::run(url, branch, no_commit),
         cli::Command::Pull { name, commit } => commands::pull::run(name, commit),
         cli::Command::Rm { name, no_commit } => commands::rm::run(name, no_commit),
         cli::Command::Diff { name, full } => commands::diff::run(name, full),
